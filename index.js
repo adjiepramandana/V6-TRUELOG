@@ -123,7 +123,7 @@ function startBot(token) {
               const additionalButtons = [
                   [Markup.button.callback('💾 Tambahkan link grup', 'save_list')],
                   [Markup.button.callback('📋 List Group', 'list_group_links')],
-                  [Markup.button.callback('🧨 Culik Semua Mutual ke Semua Grup', `culik_semua_${selectedNumber}`)]
+                  [Markup.button.callback('🧨 Culik Semua Nomor ke Semua Grup', 'culik_semua_all')]
               ];
   
               const buttons = [...numbers, ...additionalButtons];
@@ -193,6 +193,45 @@ function startBot(token) {
       ctx.answerCbQuery();
   });
 
+  bot.action('culik_semua_all', async (ctx) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}listNumber`);
+      const numbers = response.data.numbers;
+  
+      if (!numbers || numbers.length === 0) {
+        return ctx.reply("❌ Tidak ada nomor aktif untuk proses culik.");
+      }
+  
+      ctx.reply(`⏳ Mulai menculik semua mutual dari ${numbers.length} nomor ke semua grup...`);
+  
+      for (const number of numbers) {
+        try {
+          const res = await axios.post(`${API_BASE_URL}inviteMutualContactsToAllGroups`, {
+            phoneNumber: number
+          });
+  
+          const status = res.data?.status;
+          const report = res.data?.report || [];
+  
+          await ctx.reply(
+            `📞 *${number}* - ${status === 'success' ? '✅ Berhasil' : '❌ Gagal'}\n` +
+            report.map(r => `• ${r.group}\n   → ${r.status}`).join('\n\n'),
+            { parse_mode: 'Markdown' }
+          );
+        } catch (e) {
+          await ctx.reply(`❌ Gagal menculik dari nomor ${number}: ${e.message}`);
+        }
+      }
+  
+      ctx.answerCbQuery();
+    } catch (e) {
+      console.error(e);
+      ctx.reply('❌ Gagal menjalankan culik semua.');
+      ctx.answerCbQuery();
+    }
+  });
+  
+
     bot.action('delete_all_numbers', async (ctx) => {
         console.log("🔍 User clicked 'Hapus Semua Nomor'");
         try {
@@ -246,7 +285,8 @@ function startBot(token) {
                   ...Markup.inlineKeyboard([
                       [Markup.button.callback('🗑️ Hapus Nomor', `delete_${selectedNumber}`)],
                       [Markup.button.callback('⬅️ Back', 'back_to_menu')],
-                      [Markup.button.callback('🕵🏻‍♀️ Culik ke Grup', `culik_grup_${selectedNumber}`)]
+                      [Markup.button.callback('🕵🏻‍♀️ Culik ke Grup', `culik_grup_${selectedNumber}`)],
+                      [Markup.button.callback('🧨 Culik Semua Mutual ke Semua Grup', `culik_semua_${selectedNumber}`)]
                   ])
               }
           );
