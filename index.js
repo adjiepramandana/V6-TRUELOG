@@ -126,7 +126,7 @@ function startBot(token) {
                   [Markup.button.callback('🧨 Culik Semua Nomor ke Semua Grup', 'culik_semua_all')]
               ];
   
-              const buttons = [...numbers, ...additionalButtons];
+              const buttons = [...numbers];
   
               if (numbers.length > 0) {
                   ctx.reply('📄 *Pilih Nomor:*', {
@@ -295,9 +295,7 @@ function startBot(token) {
           parse_mode: 'Markdown',
           ...Markup.inlineKeyboard([
             [Markup.button.callback('🗑️ Hapus Nomor', `delete_${selectedNumber}`)],
-            [Markup.button.callback('⬅️ Back', 'back_to_menu')],
-            [Markup.button.callback('🕵🏻‍♀️ Culik ke Grup', `culik_grup_${selectedNumber}`)],
-            [Markup.button.callback('🧨 Culik Semua Mutual ke Semua Grup', `culik_semua_${selectedNumber}`)]
+            [Markup.button.callback('⬅️ Back', 'back_to_menu')]
           ])
         }
       );
