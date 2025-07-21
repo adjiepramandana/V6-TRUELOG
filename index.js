@@ -115,7 +115,7 @@ function startBot(token) {
                           timeAgo = moment(Number(timestamp)).fromNow();
                       }
   
-                      return [Markup.button.callback(`${timeAgo} | ${number}`, `select_${number}`)];
+                      return [Markup.button.callback(`${number}`, `select_${number}`)];
                   });
   
               console.log("📄 Sending numbers to user:", numbers);
@@ -168,13 +168,13 @@ function startBot(token) {
                           timeAgo = moment(Number(timestamp)).fromNow();
                       }
   
-                      return [Markup.button.callback(`${timeAgo} | ${number}`, `select_${number}`)];
+                      return [Markup.button.callback(`${number}`, `select_${number}`)];
                   });
   
               console.log("📄 Sending numbers to user:", numbers);
   
               if (numbers.length > 0) {
-                  ctx.reply('📄 *Pilih Nomor:*', {
+                  ctx.reply('*Pilih Nomor Account:*', {
                       parse_mode: 'Markdown',
                       ...Markup.inlineKeyboard(numbers)
                   });
