@@ -129,7 +129,7 @@ function startBot(token) {
               const buttons = [...numbers];
   
               if (numbers.length > 0) {
-                  ctx.reply('📄 *Pilih Nomor:*', {
+                  ctx.reply('*Pilih Nomor Account:*', {
                       parse_mode: 'Markdown',
                       ...Markup.inlineKeyboard(buttons)
                   });
